@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<h2>Welcome, {{ user.username }} ({{ user.role }})</h2>
+
+{% if user.role == 'Admin' %}
+  <p><a href="{{ url_for('employees') }}">Add Employees</a></p>
+  <p><a href="{{ url_for('attendance_report') }}">See Reports</a></p>
+
+{% elif user.role == 'Employee' %}
+  <p><a href="{{ url_for('mark_attendance') }}">Mark Attendance</a></p>
+
+{% endif %}
+{% endblock %}

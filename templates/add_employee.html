@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Add Employee{% endblock %}
+
+{% block content %}
+<h2>Add Employee</h2>
+
+<form method="POST" action="{{ url_for('add_employee') }}">
+  <label for="username">Username:</label><br>
+  <input type="text" name="username" id="username" required><br><br>
+
+  <label for="fullname">Full Name:</label><br>
+  <input type="text" name="fullname" id="fullname" required><br><br>
+
+  <label for="password">Password:</label><br>
+  <input type="password" name="password" id="password" required><br><br>
+
+  <h3>Capture Multiple Employee Photos (Max 5)</h3>
+  <video id="video" width="320" height="240" autoplay></video><br>
+  <button type="button" id="capture">Capture Photo</button><br><br>
+
+  <div id="photosPreview"></div>
+
+  <!-- Hidden input to store JSON array of base64 photos -->
+  <input type="hidden" name="photo_data_array" id="photo_data_array" required>
+
+  <button type="submit" id="submitBtn">Add Employee</button>
+</form>
+
+<script>
+  const video = document.getElementById('video');
+  const captureBtn = document.getElementById('capture');
+  const photosPreview = document.getElementById('photosPreview');
+  const photoDataArrayInput = document.getElementById('photo_data_array');
+
+  const canvas = document.createElement('canvas');
+  canvas.width = 320;
+  canvas.height = 240;
+  const ctx = canvas.getContext('2d');
+
+  let photoDataArray = [];
+
+  // Start webcam
+  navigator.mediaDevices.getUserMedia({ video: true })
+    .then(stream => { video.srcObject = stream; })
+    .catch(err => {
+      console.error('Webcam error:', err);
+      alert('Could not access webcam. Please allow camera and refresh.');
+    });
+
+  captureBtn.addEventListener('click', () => {
+    if(photoDataArray.length >= 5) {
+      alert('Maximum 5 photos allowed.');
+      return;
+    }
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    const dataUrl = canvas.toDataURL('image/jpeg');
+
+    photoDataArray.push(dataUrl);
+    photoDataArrayInput.value = JSON.stringify(photoDataArray);
+
+    // Preview
+    const img = document.createElement('img');
+    img.src = dataUrl;
+    img.width = 80;
+    img.height = 60;
+    img.style.marginRight = '5px';
+    photosPreview.appendChild(img);
+  });
+
+  // Debug print on form submit
+  const form = document.querySelector('form');
+  form.addEventListener('submit', () => {
+    console.log('Submitting photos:', photoDataArrayInput.value);
+  });
+</script>
+{% endblock %}

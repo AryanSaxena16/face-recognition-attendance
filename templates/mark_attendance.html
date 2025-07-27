@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Mark Attendance (Live Webcam Match)</title>
+</head>
+<body>
+  <h2>Mark Attendance (Live Webcam Match)</h2>
+
+  <video id="video" width="320" height="240" autoplay></video>
+  <p id="status">Status: Waiting to verify face...</p>
+
+  <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
+
+  <script>
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const statusP = document.getElementById('status');
+    let attendanceMarked = false;
+
+    // Access webcam
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => {
+        video.srcObject = stream;
+        // Start verification loop after video starts playing
+        video.addEventListener('playing', () => {
+          setTimeout(sendFrameForVerification, 2000); // Start after 2 sec
+        });
+      })
+      .catch(err => {
+        console.error('Webcam access error:', err);
+        statusP.textContent = "Error: Could not access webcam. Please allow camera access.";
+      });
+
+    function sendFrameForVerification() {
+      if (attendanceMarked) return;
+
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const dataUrl = canvas.toDataURL('image/jpeg');
+
+      fetch('{{ url_for("mark_attendance") }}', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({ image: dataUrl }),
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log('Server response:', data);
+        statusP.textContent = `Status: ${data.message}`;
+
+        if (data.message && (data.message.toLowerCase().includes('success') || data.message.toLowerCase().includes('already'))) {
+          attendanceMarked = true;
+          statusP.textContent += ' Attendance confirmed.';
+          // Optionally stop webcam or disable further processing
+        } else if (data.message && data.message.toLowerCase().includes('denied')) {
+          // Keep trying
+          setTimeout(sendFrameForVerification, 3000);
+        } else {
+          // For other messages or errors, wait and retry
+          setTimeout(sendFrameForVerification, 3000);
+        }
+      })
+      .catch(err => {
+        console.error('Fetch error:', err);
+        statusP.textContent = 'Error communicating with server. Retrying...';
+        setTimeout(sendFrameForVerification, 5000);
+      });
+    }
+  </script>
+</body>
+</html>

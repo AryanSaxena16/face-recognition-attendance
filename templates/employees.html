@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Employees{% endblock %}
+{% block content %}
+<h2>Employees</h2>
+<a href="{{ url_for('add_employee') }}">Add New Employee</a>
+<table>
+  <thead>
+    <tr><th>ID</th><th>Username</th><th>Full Name</th></tr>
+  </thead>
+  <tbody>
+    {% for emp in employees %}
+      <tr>
+        <td>{{ emp[0] }}</td>
+        <td>{{ emp[1] }}</td>
+        <td>{{ emp[2] }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
