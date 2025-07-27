@@ -35,6 +35,7 @@ This project is a web-based employee attendance system that uses face recognitio
 1. **Clone the repository**:
 
 git clone https://github.com/AryanSaxena16/face-recognition-attendance.git
+
 cd face-recognition-attendance
 
 
@@ -63,7 +64,7 @@ pip install -r requirements.txt
 
 - `UPLOAD_PATH`: Directory to store profile photos.
 - `DATASET_PATH`: Directory to store face samples dataset.
-- `SECRET_KEY` for Flask session management.(optional)
+- `SECRET_KEY` for Flask session management.
 
 6. **Run the Flask app:**
 
