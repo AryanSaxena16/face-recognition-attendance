@@ -11,8 +11,8 @@
             "driver": "MySQL",
             "name": "my attendence app",
             "database": "attendance_db",
-            "username": "mave",
-            "password": "qwerty12345"
+            "username": "your username",
+            "password": "password"
         }
     ]
 }
