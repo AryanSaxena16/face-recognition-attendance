@@ -3,8 +3,8 @@ import os
 class Config:
     SECRET_KEY = os.urandom(32)  # Secure session
     MYSQL_HOST = 'localhost'
-    MYSQL_USER = 'mave'
-    MYSQL_PASSWORD = 'qwerty12345'
+    MYSQL_USER = 'enter username'
+    MYSQL_PASSWORD = 'enter your password'
     MYSQL_DB = 'attendance_db'
     
     MAX_CONTENT_LENGTH = 2 * 1024 * 1024  # Max upload 2MB
